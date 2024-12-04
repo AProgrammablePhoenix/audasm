@@ -5,6 +5,7 @@ project(audasm)
 add_executable(aus
     "src/main.cpp"
     "src/context.cpp"
+    "src/memory.cpp"
     "src/parsing_utils.cpp"
     "src/registers.cpp"
     "src/formats/prefix.cpp"

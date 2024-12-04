@@ -20,7 +20,12 @@ struct ZOInstruction {
     bool hasOptionalImm8 = false;
 };
 
-extern std::unordered_map<std::string, ZOInstruction> ZOTable;
+struct ALUInstruction {
+    uint8_t reg_field;
+};
+
+extern std::unordered_map<std::string, ZOInstruction>   ZOTable;
+extern std::unordered_map<std::string, ALUInstruction>  ALUTable;
 
 bool check_forbidden_prefix(const Context& ctx, uint8_t p);
 void assemble_zo(Context& ctx, const std::string_view& instruction);
