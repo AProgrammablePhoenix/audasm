@@ -415,7 +415,7 @@ template<uint8_t DISP_MODE> static void generate_mr(
 ) {
     if (!ex_prefixes.empty()) {
         for (const auto& p : prefixes) {
-            if (!ex_prefixes.contains(p)) {
+            if (std::find(ex_prefixes.cbegin(), ex_prefixes.cend(), p) != ex_prefixes.cend()) {
                 ctx.output_file.put(p);
             }
         }
@@ -425,7 +425,7 @@ template<uint8_t DISP_MODE> static void generate_mr(
     }
 
     if (!other_prefixes.empty()) {
-        ctx.output_file.write((const char*)ohter_prefixes.data(), other_prefixes.size());
+        ctx.output_file.write((const char*)other_prefixes.data(), other_prefixes.size());
     }
     else {
         ctx.output_file.put(op);
