@@ -28,4 +28,5 @@ extern std::unordered_map<std::string, ZOInstruction>   ZOTable;
 extern std::unordered_map<std::string, ALUInstruction>  ALUTable;
 
 bool check_forbidden_prefix(const Context& ctx, uint8_t p);
-void assemble_zo(Context& ctx, const std::string_view& instruction);
+void assemble_zo(Context& ctx, const std::string_view& instruction, const std::string_view& args);
+

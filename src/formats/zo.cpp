@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <format>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -7,6 +8,7 @@
 
 #include "context.hpp"
 #include "formats.hpp"
+#include "parsing_utils.hpp"
 
 #define CVEC(...) __VA_ARGS__
 
@@ -137,8 +139,20 @@ std::unordered_map<std::string, ZOInstruction> ZOTable = {
     { "XTEST",          ZO_I_BASE(0xD6, CVEC({ 0x66, 0xF2, 0xF3 }), CVEC({ 0x0F, 0x01 })) }
 };
 
-void assemble_zo(Context& ctx, const std::string_view& instruction) {
+void assemble_zo(Context& ctx, const std::string_view& instruction, const std::string_view& args) {
     ZOInstruction zoi = ZOTable.at(instruction.data());
+
+    std::string_view trimmed = trim_string(args);
+    if (!trimmed.empty() && !trimmed.front() != ';') {
+        std::cerr << std::format(
+            "Error on line {}: Instruction `{}` did not expect arguments ; found: `{}`",
+            ctx.line_no,
+            instruction,
+            args
+        ) << std::endl;
+        ctx.on_error = true;
+        return;
+    }
 
     if (!ctx.contextual_prefixes.empty() && !zoi.forbidden_prefixes.empty()) {
         for (const auto& p : zoi.forbidden_prefixes) {

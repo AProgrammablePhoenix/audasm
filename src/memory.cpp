@@ -4,34 +4,9 @@
 #include <vector>
 
 #include "context.hpp"
+#include "memory.hpp"
 #include "parsing_utils.hpp"
 #include "registers.hpp"
-
-struct MemoryOperandDescriptor {
-    // Legacy 16-bit fields
-    
-    uint8_t size;   // 16, 32, or 64
-    bool bx;        // true if BX is used
-    bool bp;        // true if BP is used
-    bool si;        // true if SI is used
-    bool di;        // true if DI is used
-    int64_t disp;   // displacement
-
-    // Legacy 32-bit fields
-
-    uint8_t index;  // SIB-index
-    uint8_t scale;  // SIB-scale
-    uint8_t base;   // SIB-base
-};
-
-struct MemoryOperand {
-    uint8_t     size;
-    uint8_t     modrm;
-    bool        has_sib;
-    uint8_t     sib;
-    uint8_t     disp_size;
-    uint64_t    disp;
-};
 
 namespace {
     static inline bool invalid_16_bit_repetition(
@@ -698,5 +673,21 @@ bool make_modrm_sib(
             break;
         }
         default: return false;
+    }
+}
+
+void output_disp_16(Context& ctx, uint8_t disp_size, uint64_t disp) {
+    switch (disp_size) {
+        case  8: ctx.output_file.put((uint8_t)disp); break;
+        case 16: ctx.output_file.write((const char*)disp, sizeof(uint16_t)); break;
+        default: break;
+    }
+}
+
+void output_disp_32(Context& ctx, uint8_t disp_size, uint64_t disp) {
+    switch (disp_size) {
+        case  8: ctx.output_file.put((uint8_t)disp); break;
+        case 32: ctx.output_file.write((const char*)disp, sizeof(uint32_t)); break;
+        default: break;
     }
 }
