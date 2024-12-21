@@ -36,8 +36,20 @@ namespace {
             std::string_view instruction = s.substr(0, delimiter_pos);
             std::string_view args = delimiter_pos != std::string_view::npos ? s.substr(delimiter_pos + 1) : "";
 
-            if (ZOTable.contains(instruction.data())) {
+            if (ZOTable.contains(instruction)) {
                 assemble_zo(ctx, instruction, args);
+            }
+            else if (ALUTable.contains(instruction)) {
+                assemble_alu(ctx, instruction, args);
+            }
+            else {
+                std::cerr << std::format(
+                    "Error on line {}: Unknown instruction `{}`",
+                    ctx.line_no,
+                    instruction.data()
+                ) << std::endl;
+                ctx.on_error = true;
+                return;
             }
         }
     }

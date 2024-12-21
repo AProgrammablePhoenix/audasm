@@ -1,10 +1,10 @@
 #include <cstdint>
-#include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "registers.hpp"
 
-std::unordered_map<std::string, std::pair<AsmRegister, int32_t>> REGISTERS = {
+std::unordered_map<std::string_view, std::pair<AsmRegister, int32_t>> REGISTERS = {
     { "AL",     { AsmRegister::AL,   8 } },
     { "AH",     { AsmRegister::AH,   8 } },
     { "AX",     { AsmRegister::AX,  16 } },

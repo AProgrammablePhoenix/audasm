@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
+#include <string_view>
 #include <unordered_map>
 
 enum class AsmRegister {
@@ -21,5 +21,5 @@ enum class AsmRegister {
     SS
 };
 
-extern std::unordered_map<std::string, std::pair<AsmRegister, int32_t>> REGISTERS;
+extern std::unordered_map<std::string_view, std::pair<AsmRegister, int32_t>> REGISTERS;
 extern std::unordered_map<AsmRegister, uint8_t> REGISTERS_ENCODING;

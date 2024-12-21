@@ -2,6 +2,7 @@
 #include <format>
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -16,7 +17,7 @@
         .reg_field = v \
     } \
 
-std::unordered_map<std::string, ALUInstruction> ALUTable = {
+std::unordered_map<std::string_view, ALUInstruction> ALUTable = {
     { "ADC", ALU(2) },
     { "ADD", ALU(0) },
     { "AND", ALU(4) },
@@ -28,7 +29,7 @@ std::unordered_map<std::string, ALUInstruction> ALUTable = {
 };
 
 void assemble_alu(Context& ctx, const std::string_view& instruction, const std::string_view& args) {
-    ALUInstruction alui = ALUTable.at(instruction.data());
+    ALUInstruction alui = ALUTable.at(instruction);
 
     const uint8_t opcode_imm_8      = 0x04 + 0x08 * alui.reg_field;
     const uint8_t opcode_imm_def    = 0x05 + 0x08 * alui.reg_field;

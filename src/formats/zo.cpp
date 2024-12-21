@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -45,7 +46,7 @@
         .hasOptionalImm8 = true \
     }
 
-std::unordered_map<std::string, ZOInstruction> ZOTable = {
+std::unordered_map<std::string_view, ZOInstruction> ZOTable = {
     { "AAA",            ZO_I_OPC(0x37) },
     { "AAD",            ZOIMM_OPC(0xD5) },
     { "AAM",            ZOIMM_OPC(0xD4) },

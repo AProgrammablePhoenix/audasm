@@ -32,17 +32,19 @@ std::vector<std::string_view> split_string(std::string_view s, char del) {
     size_t i = 0;
     std::string_view tok;
 
-    while ((i = s.find(del) != std::string_view::npos)) {
+    while ((i = s.find(del)) != std::string_view::npos) {
         tokens.emplace_back(s.substr(0, i));
         s = s.substr(i + 1);
     }
-    tokens.push_back(s);
+    if (!s.empty()) {
+        tokens.emplace_back(s);
+    }
 
     return tokens;
 }
 
 bool parse_number(Context& ctx, const std::string_view& s, uint64_t& res) {
-    if (s.starts_with("0x")) {
+    if (s.starts_with("0X")) {
         const std::string_view& suffix = s.substr(2);
         if (!parse_number_base(suffix, 16, res)) {
             ctx.on_error = true;
@@ -53,7 +55,7 @@ bool parse_number(Context& ctx, const std::string_view& s, uint64_t& res) {
             ) << std::endl;
         }
     }
-    else if (s.starts_with("0o")) {
+    else if (s.starts_with("0O")) {
         const std::string_view& suffix = s.substr(2);
         if (!parse_number_base(suffix, 8, res)) {
             ctx.on_error = true;
@@ -64,7 +66,7 @@ bool parse_number(Context& ctx, const std::string_view& s, uint64_t& res) {
             ) << std::endl;
         }
     }
-    else if (s.starts_with("0b")) {
+    else if (s.starts_with("0B")) {
         const std::string_view& suffix = s.substr(2);
         if (!parse_number_base(suffix, 2, res)) {
             ctx.on_error = true;
@@ -129,7 +131,7 @@ std::vector<AsmArg> expect_arguments(Context& ctx, const std::string_view& s, si
             trimmed_arg = trim_string(trimmed_arg.substr(prefix_length));
         }
 
-        if (REGISTERS.contains(trimmed_arg.data())) {
+        if (REGISTERS.contains(trimmed_arg)) {
             if (size_override != 0) {
                 std::cerr << std::format(
                     "Error on line {}: Did not expect a size prefix before a register",
@@ -141,7 +143,7 @@ std::vector<AsmArg> expect_arguments(Context& ctx, const std::string_view& s, si
 
             parsed_args.emplace_back(AsmArg {
                 .type = AsmArgType::REGISTER,
-                .reg = REGISTERS.at(trimmed_arg.data())
+                .reg = REGISTERS.at(trimmed_arg)
             });
         }
         else if (trimmed_arg.starts_with('[')) {
@@ -149,7 +151,7 @@ std::vector<AsmArg> expect_arguments(Context& ctx, const std::string_view& s, si
                 std::string_view memop = trimmed_arg.substr(1, trimmed_arg.size() - 2);
                 /// TODO: parse memory operand
                 MemoryOperandDescriptor mdesc;
-                if (!parse_memory(ctx, memop.data(), mdesc)) {
+                if (!parse_memory(ctx, std::string(memop), mdesc)) {
                     std::cout << std::format(
                         "Error on line {}: Invalid memory operand detected for `{}`",
                         ctx.line_no,
