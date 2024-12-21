@@ -112,22 +112,22 @@ std::vector<AsmArg> expect_arguments(Context& ctx, const std::string_view& s, si
         std::string_view trimmed_arg = trim_string(arg);
         uint8_t size_override = 0;
 
-        if (trimmed_arg.starts_with("%byte")) {
+        if (trimmed_arg.starts_with("%BYTE")) {
             constexpr size_t prefix_length = 5;
             size_override = 8;
             trimmed_arg = trim_string(trimmed_arg.substr(prefix_length));
         }
-        else if (trimmed_arg.starts_with("%word")) {
+        else if (trimmed_arg.starts_with("%WORD")) {
             constexpr size_t prefix_length = 5;
             size_override = 16;
             trimmed_arg = trim_string(trimmed_arg.substr(prefix_length));
         }
-        else if (trimmed_arg.starts_with("%dword")) {
+        else if (trimmed_arg.starts_with("%DWORD")) {
             constexpr size_t prefix_length = 6;
             size_override = 32;
             trimmed_arg = trim_string(trimmed_arg.substr(prefix_length));
         }
-        else if (trimmed_arg.starts_with("%qword")) {
+        else if (trimmed_arg.starts_with("%QWORD")) {
             constexpr size_t prefix_length = 6;
             size_override = 64;
             trimmed_arg = trim_string(trimmed_arg.substr(prefix_length));

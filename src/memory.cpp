@@ -183,7 +183,7 @@ bool parse_memory(
                         break;
                     }
                     case 32: {
-                        if (desc.size == 0) {
+                        if (desc.size == 0 || (!desc.bp && !desc.bx && !desc.si && !desc.di)) {
                             desc.size = 32;
                         }
                         else if (desc.size != 32) {
@@ -294,11 +294,26 @@ bool parse_memory(
                     return false;
                 }
 
+                if (desc.size == 0 || (!desc.bp && !desc.bx && !desc.si && !desc.di)) {
+                    desc.size = 32;
+                }
+                else if (desc.size != 32) {
+                    std::cerr << std::format(
+                        "Error on line {}: Invalid combination of 32-bit register `{}` in {}-bit memory operand `[{}]`",
+                        ctx.line_no,
+                        atom,
+                        desc.size,
+                        rs
+                    ) << std::endl;
+                    ctx.on_error = true;
+                    return false;
+                }
+
                 if (!is_adding) {
                     scale = -scale;
                 }
 
-                if (desc.index == 0xFF) {
+                if (desc.index != 0xFF) {
                     if (desc.index == register_encoding) {
                         desc.scale += scale;
                     }
@@ -340,7 +355,7 @@ bool parse_memory(
                 }
 
                 int64_t sn = (int64_t)n;
-                if (!test_number<int32_t>(sn)) {
+                if (!test_number_strict<int32_t>(sn)) {
                     sn = (int64_t)((int32_t)sn);
                     std::cerr << std::format(
                         "Warning on line {}: Displacement magnitude of `{}` is too large, applying modulo 2^32, might cause unwanted or undefined behavior",
@@ -348,6 +363,19 @@ bool parse_memory(
                         atom
                     ) << std::endl;
                 }
+
+                if (desc.size == 0) {
+                    if (!test_number_strict<int16_t>(sn)) {
+                        sn = (int64_t)((int32_t)sn);
+                        std::cerr << std::format(
+                            "Warning on line {}: Displacement magnitude of `{}` is too large, applying modulo 2^16, might cause unwanted or undefined behavior",
+                            ctx.line_no,
+                            atom
+                        ) << std::endl;
+                    }
+                    desc.size = 16;
+                }
+
                 desc.disp += is_adding ? sn : -sn;
             }
 

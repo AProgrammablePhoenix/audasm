@@ -89,6 +89,7 @@ int main(int argc, char* argv[]) {
         size_t startpos = line.find_first_not_of(" \t");
 
         if (endpos == std::string::npos) {
+            ++ctx.line_no;
             continue;
         }
 

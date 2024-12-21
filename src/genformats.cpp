@@ -60,7 +60,7 @@ void x86_format_ri(Context& ctx, const std::string_view& instruction, const Form
                 ctx.output_file.put(0x66);
             }
 
-            if (test_number<int8_t>(imm)) {
+            if (test_number_strict<int8_t>(imm)) {
                 ctx.output_file.put(fparams.r_def_imm8_op);
                 ctx.output_file.put(modrm);
                 ctx.output_file.put((uint8_t)imm);
@@ -85,7 +85,7 @@ void x86_format_ri(Context& ctx, const std::string_view& instruction, const Form
                 ctx.output_file.put(0x66);
             }
 
-            if (test_number<int8_t>(imm)) {
+            if (test_number_strict<int8_t>(imm)) {
                 ctx.output_file.put(fparams.r_def_imm8_op);
                 ctx.output_file.put(modrm);
                 ctx.output_file.put((uint8_t)imm);
@@ -174,8 +174,8 @@ template<size_t IMM_SIZE, uint8_t DISP_MODE> static void generate_mi(
 
     switch (IMM_SIZE) {
         case  8: ctx.output_file.put((uint8_t)imm); break;
-        case 16: ctx.output_file.write((const char*)imm, sizeof(uint16_t)); break;
-        case 32: ctx.output_file.write((const char*)imm, sizeof(uint32_t)); break;
+        case 16: ctx.output_file.write((const char*)&imm, sizeof(uint16_t)); break;
+        case 32: ctx.output_file.write((const char*)&imm, sizeof(uint32_t)); break;
         default: break;
     }
 }
@@ -206,7 +206,7 @@ void x86_format_mi(Context& ctx, const FormatMI& fparams) {
                         generate_warning_mi<8, 16>(ctx, {}, fparams.r8_imm8_op, mmop, imm);
                     }
                     else if (size_override == 0 || size_override == 16) {
-                        if (test_number<int8_t>(imm)) {
+                        if (test_number_strict<int8_t>(imm)) {
                             generate_mi<8, 16>(ctx, {}, fparams.r_def_imm8_op, mmop, imm);
                         }
                         else {
@@ -214,7 +214,7 @@ void x86_format_mi(Context& ctx, const FormatMI& fparams) {
                         }
                     }
                     else if (size_override == 32) {
-                        if (test_number<int8_t>(imm)) {
+                        if (test_number_strict<int8_t>(imm)) {
                             generate_mi<8, 16>(ctx, { 0x66 }, fparams.r_def_imm8_op, mmop, imm);
                         }
                         else {
@@ -235,7 +235,7 @@ void x86_format_mi(Context& ctx, const FormatMI& fparams) {
                         generate_warning_mi<8, 16>(ctx, { 0x67 }, fparams.r8_imm8_op, mmop, imm);
                     }
                     else if (size_override == 16) {
-                        if (test_number<int8_t>(imm)) {
+                        if (test_number_strict<int8_t>(imm)) {
                             generate_mi<8, 16>(ctx, { 0x66, 0x67 }, fparams.r_def_imm8_op, mmop, imm);
                         }
                         else {
@@ -243,11 +243,11 @@ void x86_format_mi(Context& ctx, const FormatMI& fparams) {
                         }
                     }
                     else if (size_override == 0 || size_override == 32) {
-                        if (test_number<int8_t>(imm)) {
+                        if (test_number_strict<int8_t>(imm)) {
                             generate_mi<8, 16>(ctx, { 0x67 }, fparams.r_def_imm8_op, mmop, imm);
                         }
                         else {
-                            generate_mi<32, 16>(ctx, { 0x67 }, fparams.r_imm_def_op, mmop, imm);
+                            generate_warning_mi<32, 16>(ctx, { 0x67 }, fparams.r_imm_def_op, mmop, imm);
                         }
                     }
                     else {
@@ -275,7 +275,7 @@ void x86_format_mi(Context& ctx, const FormatMI& fparams) {
                         generate_warning_mi<8, 32>(ctx, { 0x67 }, fparams.r8_imm8_op, mmop, imm);
                     }
                     else if (size_override == 0 || size_override == 16) {
-                        if (test_number<int8_t>(imm)) {
+                        if (test_number_strict<int8_t>(imm)) {
                             generate_mi<8, 32>(ctx, { 0x67 }, fparams.r_def_imm8_op, mmop, imm);
                         }
                         else {
@@ -283,7 +283,7 @@ void x86_format_mi(Context& ctx, const FormatMI& fparams) {
                         }
                     }
                     else if (size_override == 32) {
-                        if (test_number<int8_t>(imm)) {
+                        if (test_number_strict<int8_t>(imm)) {
                             generate_mi<8, 32>(ctx, { 0x66, 0x67 }, fparams.r_def_imm8_op, mmop, imm);
                         }
                         else {
@@ -304,7 +304,7 @@ void x86_format_mi(Context& ctx, const FormatMI& fparams) {
                         generate_warning_mi<8, 32>(ctx, {}, fparams.r8_imm8_op, mmop, imm);
                     }
                     else if (size_override == 16) {
-                        if (test_number<int8_t>(imm)) {
+                        if (test_number_strict<int8_t>(imm)) {
                             generate_mi<8, 32>(ctx, { 0x66 }, fparams.r_def_imm8_op, mmop, imm);
                         }
                         else {
@@ -312,7 +312,7 @@ void x86_format_mi(Context& ctx, const FormatMI& fparams) {
                         }
                     }
                     else if (size_override == 0 || size_override == 32) {
-                        if (test_number<int8_t>(imm)) {
+                        if (test_number_strict<int8_t>(imm)) {
                             generate_mi<8, 32>(ctx, {}, fparams.r_def_imm8_op, mmop, imm);
                         }
                         else {
