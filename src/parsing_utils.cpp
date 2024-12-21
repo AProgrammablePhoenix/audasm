@@ -12,7 +12,9 @@
 
 namespace {
     static bool parse_number_base(const std::string_view& s, int base, uint64_t& res) {
-        auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), res, base);
+        int64_t temp;
+        auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), temp, base);
+        res = temp;
         return ec == std::errc{} && ptr == s.data() + s.size();
     }
 }

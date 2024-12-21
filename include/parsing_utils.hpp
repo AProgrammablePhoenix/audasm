@@ -16,6 +16,10 @@ std::vector<AsmArg> expect_arguments(Context& ctx, const std::string_view& s, si
 
 template<typename T> requires std::numeric_limits<T>::is_integer bool test_number(int64_t n) {
     return
-        n >= (int64_t)std::numeric_limits<T>::min && n <= (int64_t)std::numeric_limits<T>::max
-        || (uint64_t)n >= 0 && (uint64_t)n <= (uint64_t)std::numeric_limits<std::make_unsigned<T>>::max;
+        (n >= (int64_t)std::numeric_limits<T>::min() && n <= (int64_t)std::numeric_limits<T>::max())
+        || ((uint64_t)n >= 0 && (uint64_t)n <= (uint64_t)std::numeric_limits<typename std::make_unsigned<T>::type>::max());
+}
+
+template<typename T> requires std::numeric_limits<T>::is_integer bool test_number_strict(int64_t n) {
+    return n >= (int64_t)std::numeric_limits<T>::min() && n <= (int64_t)std::numeric_limits<T>::max();
 }

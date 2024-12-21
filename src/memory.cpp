@@ -115,8 +115,10 @@ bool parse_memory(
         .base   = 0xFF
     };
 
-    for (const char& c : s) {
-        if (c != '+' && c != '-') {
+    for (size_t i = 0; i <= s.size(); ++i) {
+        const char& c = s[i];
+
+        if (c != '+' && c != '-' && i < s.size()) {
             atom.push_back(c);
         }
         else {
@@ -393,7 +395,7 @@ bool build_16bit_modrm(
         };
         return true;
     }
-    else if (test_number<int8_t>(desc.disp)) {
+    else if (test_number_strict<int8_t>(desc.disp)) {
         mop = {
             .size       = 16,
             .modrm      = build_modrm_core(rm, reg, 0b01),
@@ -404,7 +406,7 @@ bool build_16bit_modrm(
         };
         return true;
     }
-    else if (test_number<int16_t>(desc.disp)) {
+    else if (test_number_strict<int16_t>(desc.disp)) {
         mop = {
             .size       = 16,
             .modrm      = build_modrm_core(rm, reg, 0b10),
@@ -474,7 +476,7 @@ bool make_modrm_sib(
                 else if (desc.di) {
                     return build_16bit_modrm(ctx, desc, 0b011, reg_v, mop);
                 }
-                else if (test_number<int8_t>(desc.disp)) {
+                else if (test_number_strict<int8_t>(desc.disp)) {
                     mop = {
                         .size       = 16,
                         .modrm      = build_modrm_core(0b110, reg_v, 0b01),
@@ -546,7 +548,7 @@ bool make_modrm_sib(
                         };
                         return true;
                     }
-                    else if (test_number<int8_t>(desc.disp)) {
+                    else if (test_number_strict<int8_t>(desc.disp)) {
                         mop = {
                             .size       = 32,
                             .modrm      = build_modrm_core(desc.base, reg_v, 0b01),
@@ -572,7 +574,7 @@ bool make_modrm_sib(
             }
 
             const uint8_t sib_rm = esp_encoding;
-            const uint8_t disp_size = test_number<int8_t>(desc.disp) ? 8 : 32;
+            const uint8_t disp_size = test_number_strict<int8_t>(desc.disp) ? 8 : 32;
             const uint8_t mmod = (disp_size == 8) ? 0b01 : 0b10;
 
             if (desc.base == 0xFF && desc.index == 0xFF) {
@@ -679,7 +681,7 @@ bool make_modrm_sib(
 void output_disp_16(Context& ctx, uint8_t disp_size, uint64_t disp) {
     switch (disp_size) {
         case  8: ctx.output_file.put((uint8_t)disp); break;
-        case 16: ctx.output_file.write((const char*)disp, sizeof(uint16_t)); break;
+        case 16: ctx.output_file.write((const char*)&disp, sizeof(uint16_t)); break;
         default: break;
     }
 }
@@ -687,7 +689,7 @@ void output_disp_16(Context& ctx, uint8_t disp_size, uint64_t disp) {
 void output_disp_32(Context& ctx, uint8_t disp_size, uint64_t disp) {
     switch (disp_size) {
         case  8: ctx.output_file.put((uint8_t)disp); break;
-        case 32: ctx.output_file.write((const char*)disp, sizeof(uint32_t)); break;
+        case 32: ctx.output_file.write((const char*)&disp, sizeof(uint32_t)); break;
         default: break;
     }
 }
