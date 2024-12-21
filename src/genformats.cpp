@@ -42,7 +42,7 @@ void x86_format_ri(Context& ctx, const std::string_view& instruction, const Form
 
     switch (fparams.reg_size) {
         case 8: {
-            if (test_number<int8_t>(imm)) {
+            if (!test_number<int8_t>(imm)) {
                 std::cerr << std::format(
                     "Warning on line {}: Immediate value `{}` too large to fit within 8 bits, truncating to 8 bits",
                     ctx.line_no,
